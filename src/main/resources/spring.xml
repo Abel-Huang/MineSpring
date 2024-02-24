@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+
+    <bean id="propertyHelloDaoFactoryBean" class="cn.abelib.springframework.IPropertyHelloDaoFactoryBean"/>
+
+    <bean id="propertyHelloService" class="cn.abelib.springframework.PropertyHelloService">
+        <property name="name" value="abel"/>
+        <property name="propertyHelloDao" ref="propertyHelloDaoFactoryBean"/>
+    </bean>
+
+    <bean id="helloService" class="cn.abelib.springframework.HelloService">
+        <property name="name" value="abel"/>
+    </bean>
+</beans>
