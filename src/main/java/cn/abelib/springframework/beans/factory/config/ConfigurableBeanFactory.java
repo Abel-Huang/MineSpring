@@ -1,5 +1,6 @@
 package cn.abelib.springframework.beans.factory.config;
 
+import cn.abelib.springframework.beans.BeansException;
 import cn.abelib.springframework.beans.factory.BeanFactory;
 import cn.abelib.springframework.beans.factory.HierarchicalBeanFactory;
 
@@ -15,6 +16,12 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
     String SCOPE_PROTOTYPE = "prototype";
 
     void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
+
+    /**
+     * Determine whether the bean with the given name is a FactoryBean.
+     * @since 2.5
+     */
+    boolean isFactoryBean(String name) throws BeansException;
 
     /**
      * 销毁单例对象

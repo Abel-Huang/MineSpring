@@ -12,4 +12,12 @@ public interface HierarchicalBeanFactory extends BeanFactory {
      * or {@code null} if there is none.
      */
     BeanFactory getParentBeanFactory();
+
+
+    /**
+     * Return whether the local bean factory contains a bean of the given name,
+     * ignoring beans defined in ancestor contexts.
+     */
+    boolean containsLocalBean(String name);
+
 }

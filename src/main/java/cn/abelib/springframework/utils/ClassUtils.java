@@ -6,6 +6,9 @@ package cn.abelib.springframework.utils;
  * @date 2023/12/19 0:33
  */
 public class ClassUtils {
+    /** The CGLIB class separator: "$$" */
+    public static final String CGLIB_CLASS_SEPARATOR = "$$";
+
     public static ClassLoader getDefaultClassLoader() {
         ClassLoader cl = null;
         try {
@@ -28,5 +31,22 @@ public class ClassUtils {
             }
         }
         return cl;
+    }
+
+    /**
+     * Check whether the specified class is a CGLIB-generated class.
+     * @param clazz the class to check
+     * @see #isCglibProxyClassName(String)
+     */
+    public static boolean isCglibProxyClass(Class<?> clazz) {
+        return (clazz != null && isCglibProxyClassName(clazz.getName()));
+    }
+
+    /**
+     * Check whether the specified class name is a CGLIB-generated class.
+     * @param className the class name to check
+     */
+    public static boolean isCglibProxyClassName(String className) {
+        return (className != null && className.contains(CGLIB_CLASS_SEPARATOR));
     }
 }

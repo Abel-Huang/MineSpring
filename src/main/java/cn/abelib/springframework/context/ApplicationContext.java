@@ -8,5 +8,5 @@ import cn.abelib.springframework.beans.factory.ListableBeanFactory;
  * @version 1.0
  * @date 2023/12/27 0:03
  */
-public interface ApplicationContext extends ListableBeanFactory, HierarchicalBeanFactory {
+public interface ApplicationContext extends ListableBeanFactory, HierarchicalBeanFactory, ApplicationEventPublisher {
 }
