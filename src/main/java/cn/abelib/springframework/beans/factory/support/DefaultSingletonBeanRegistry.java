@@ -25,8 +25,25 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     private final Map<String, Object> disposableBeans = new LinkedHashMap<String, Object>();
 
     @Override
+    public void registerSingleton(String beanName, Object singletonObject) throws IllegalStateException {
+        synchronized (this.singletonObjects) {
+            Object oldObject = this.singletonObjects.get(beanName);
+            if (oldObject != null) {
+                throw new IllegalStateException("Could not register object [" + singletonObject +
+                        "] under bean name '" + beanName + "': there is already object [" + oldObject + "] bound");
+            }
+            addSingleton(beanName, singletonObject);
+        }
+    }
+
+    @Override
     public Object getSingleton(String beanName) {
         return singletonObjects.get(beanName);
+    }
+
+    @Override
+    public boolean containsSingleton(String beanName) {
+        return this.singletonObjects.containsKey(beanName);
     }
 
     protected void addSingleton(String beanName, Object singletonObject) {

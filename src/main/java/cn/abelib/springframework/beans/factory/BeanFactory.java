@@ -9,6 +9,12 @@ import cn.abelib.springframework.beans.BeansException;
  */
 public interface BeanFactory {
 
+    /**
+     * Used to dereference a {@link FactoryBean} instance and distinguish it from
+     * beans <i>created</i> by the FactoryBean.
+     */
+    String FACTORY_BEAN_PREFIX = "&";
+
     Object getBean(String name);
 
     Object getBean(String name, Object... args) throws BeansException;

@@ -5,6 +5,7 @@ import cn.abelib.springframework.beans.factory.config.BeanPostProcessor;
 import cn.abelib.springframework.beans.factory.config.ConfigurableBeanFactory;
 import cn.abelib.springframework.beans.factory.support.AbstractBeanDefinition;
 import cn.abelib.springframework.beans.factory.support.FactoryBeanRegistrySupport;
+import cn.abelib.springframework.utils.BeanFactoryUtils;
 import cn.abelib.springframework.utils.ClassUtils;
 
 import java.util.ArrayList;
@@ -129,6 +130,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         return this.parentBeanFactory;
     }
 
+    @Override
+    public boolean containsLocalBean(String name) { ;
+        return ((containsSingleton(name) || containsBeanDefinition(name)) &&
+                (!BeanFactoryUtils.isFactoryDereference(name) || isFactoryBean(name)));
+    }
+
     //---------------------------------------------------------------------
     // Implementation of ConfigurableBeanFactory interface
     //---------------------------------------------------------------------
@@ -144,6 +151,27 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
         this.beanPostProcessors.remove(beanPostProcessor);
         this.beanPostProcessors.add(beanPostProcessor);
+    }
+
+    @Override
+    public boolean isFactoryBean(String name) throws BeansException {
+        Object beanInstance = getSingleton(name);
+        if (beanInstance != null) {
+            return (beanInstance instanceof FactoryBean);
+        }
+        else if (containsSingleton(name)) {
+            // null instance registered
+            return false;
+        }
+
+        // No singleton instance found -> check bean definition.
+        if (!containsBeanDefinition(name) && getParentBeanFactory() instanceof ConfigurableBeanFactory) {
+            // No bean definition found in this factory -> delegate to parent.
+            return ((ConfigurableBeanFactory) getParentBeanFactory()).isFactoryBean(name);
+        }
+
+        // todo 暂时不支持merge
+        return false;
     }
 
     @Override
