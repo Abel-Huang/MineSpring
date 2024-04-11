@@ -4,6 +4,8 @@ import cn.abelib.springframework.beans.BeansException;
 import cn.abelib.springframework.beans.PropertyValue;
 import cn.abelib.springframework.beans.PropertyValues;
 import cn.abelib.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import cn.abelib.springframework.beans.factory.config.BeanDefinition;
+import cn.abelib.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import cn.abelib.springframework.beans.factory.support.AbstractBeanDefinition;
 import cn.abelib.springframework.beans.factory.config.BeanPostProcessor;
 import cn.abelib.springframework.beans.factory.support.CglibSubclassingInstantiationStrategy;
@@ -29,13 +31,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected Object createBean(String beanName, AbstractBeanDefinition beanDefinition, Object[] args) throws BeansException {
         Object bean;
         try {
+            bean = resolveBeforeInstantiation(beanName, beanDefinition);
+            if (null != bean) {
+                return bean;
+            }
+
             bean = createBeanInstance(beanDefinition, beanName, args);
 
             applyPropertyValues(beanName, bean, beanDefinition);
             // initialize Bean
             bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
-            throw new BeansException("Instantiation of bean failed", e);
+            System.err.printf("Instantiation of bean failed: %s%n", beanName);
+            throw new BeansException(String.format("Instantiation of bean failed: %s", beanName), e);
         }
 
         // 注册实现了 DisposableBean 接口的 Bean 对象
@@ -48,6 +56,29 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
         addSingleton(beanName, bean);
         return bean;
+    }
+
+    /**
+     * todo 缺失property
+     * Apply before-instantiation post-processors, resolving whether there is a
+     * before-instantiation shortcut for the specified bean.
+     */
+    protected Object resolveBeforeInstantiation(String beanName, AbstractBeanDefinition beanDefinition) {
+        Object bean = applyBeanPostProcessorsBeforeInstantiation(beanDefinition.getBeanClass(), beanName);
+        if (null != bean) {
+            bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+        }
+        return bean;
+    }
+
+    protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                Object result = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessBeforeInstantiation(beanClass, beanName);
+                if (null != result) return result;
+            }
+        }
+        return null;
     }
 
     protected void registerDisposableBeanIfNecessary(String beanName, Object bean, AbstractBeanDefinition beanDefinition) {
