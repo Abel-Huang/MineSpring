@@ -23,7 +23,9 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
                 return super.hashCode();
             }
         });
-        if (null == ctor) return enhancer.create();
+        if (null == ctor) {
+            return enhancer.create();
+        }
         return enhancer.create(ctor.getParameterTypes(), args);
     }
 }

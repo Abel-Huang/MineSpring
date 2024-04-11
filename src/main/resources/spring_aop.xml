@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean id="helloService" class="cn.abelib.springframework.HelloAopService">
+        <property name="name" value="abel"/>
+    </bean>
+
+    <bean class="cn.abelib.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+    <bean id="beforeAdvice" class="cn.abelib.springframework.HelloServiceAdvice"/>
+
+    <bean id="methodInterceptor" class="cn.abelib.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor">
+        <property name="advice" ref="beforeAdvice"/>
+    </bean>
+
+    <bean id="pointcutAdvisor" class="cn.abelib.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
+        <property name="expression" value="execution(* cn.abelib.springframework.IHelloService.*(..))"/>
+        <property name="advice" ref="methodInterceptor"/>
+    </bean>
+</beans>

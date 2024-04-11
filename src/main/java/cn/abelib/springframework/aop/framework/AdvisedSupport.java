@@ -10,12 +10,22 @@ import org.aopalliance.intercept.MethodInterceptor;
  * @date 2024/3/19 22:43
  */
 public class AdvisedSupport {
+    // ProxyConfig
+    private boolean proxyTargetClass = false;
 
     private TargetSource targetSource;
 
     private MethodInterceptor methodInterceptor;
 
     private MethodMatcher methodMatcher;
+
+    public boolean isProxyTargetClass() {
+        return proxyTargetClass;
+    }
+
+    public void setProxyTargetClass(boolean proxyTargetClass) {
+        this.proxyTargetClass = proxyTargetClass;
+    }
 
     public TargetSource getTargetSource() {
         return targetSource;
